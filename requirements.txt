@@ -1,0 +1,8 @@
+# Python 3.14 (Homebrew). Note: pyenv builds without xz lack the lzma module that `datasets` needs.
+torch==2.15.0
+transformers==5.22.2
+trl==1.17.1
+peft==0.21.2
+datasets==5.2.0
+accelerate
+numpy
