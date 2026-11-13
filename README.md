@@ -6,13 +6,20 @@ confidence, or does post-hoc temperature scaling do as well? Does the answer cha
 held-out (out-of-distribution) decision tasks?
 
 ## Comparison
-| method | what it is |
-|---|---|
-| prompting | base instruct model, confidence read from answer-token probabilities |
-| + temperature scaling | one scalar fit on a validation split (classic post-hoc calibration) |
-| SFT | fine-tuned on the decision tasks with cross-entropy |
-| RL (correctness only) | GRPO, reward = 1 if correct (control) |
-| RL (calibration reward) | GRPO, reward = correctness + Brier-style proper scoring rule |
+Two ways to get confidence from a decision model:
+
+| confidence source | method | trained by |
+|---|---|---|
+| token probability (implicit) | prompting | — |
+| token probability (implicit) | + temperature scaling | one scalar fit on a validation split |
+| token probability (implicit) | SFT | cross-entropy (already a proper scoring rule) |
+| written-out number (explicit, Jev-style typed output) | prompting | — |
+| written-out number (explicit) | RL, correctness-only reward (control) | GRPO |
+| written-out number (explicit) | RL, correctness + Brier reward | GRPO |
+
+RL is only needed for the explicit case: a sampled number isn't differentiable, so it can
+only be scored after it's written. The core question is whether RL-trained *written*
+confidence beats temperature-scaled *token-probability* confidence, especially on held-out tasks.
 
 **Metrics:** accuracy, expected calibration error (ECE), Brier score, selective accuracy at
 fixed coverage (abstain when unsure). In-distribution and held-out tasks.
