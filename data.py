@@ -146,6 +146,10 @@ def build():
         rng.shuffle(test)
         splits['test'] += test[:CAPS['test']]
 
+    # some datasets repeat questions across their own splits (MMLU does) — never test on a seen question
+    seen = {r['text'] for r in splits['train'] + splits['cal']}
+    splits['test'] = [r for r in splits['test'] if r['text'] not in seen]
+
     os.makedirs('data', exist_ok=True)
     for name, rows in splits.items():
         rows = [shuffle_options(r, rng) for r in rows]
