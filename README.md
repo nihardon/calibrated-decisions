@@ -1,31 +1,37 @@
 # Calibrated Decisions
 
-**Question:** for fast, no-reasoning LLM decision models (typed answers: yes/no, choose-one,
-score — no chain of thought), is RL with a proper-scoring-rule reward needed for trustworthy
-confidence, or does post-hoc temperature scaling do as well? Does the answer change on
-held-out (out-of-distribution) decision tasks?
+**Question:** TypeSafe trains its Jev decision model with "RLCD" — reinforcement learning for
+calibrated decisions — and presents it as the way to get trustworthy confidence (recipe not
+public). Does RL training actually give more trustworthy confidence than cheap fixes, on
+**decision tasks the model has never seen**?
+
+## Setup
+- Model: Qwen3-1.7B, thinking off, run locally (Apple MPS).
+- Decisions are single-letter answers; confidence = probability on the chosen option, read
+  from one forward pass (how open Jev-style models work).
+- Familiar tasks (train + calibrate): BoolQ, MNLI, Banking77 routing, MMLU.
+  Unfamiliar tasks (test only): PubMedQA, ARC-Challenge, Climate-FEVER (+ JevBench, planned).
 
 ## Comparison
-Two ways to get confidence from a decision model:
+| method | |
+|---|---|
+| base model + temperature scaling | one number fit on familiar calibration data |
+| fine-tuned (cross-entropy) + temperature scaling | ordinary supervised training |
+| RL (GRPO, proper-scoring-rule reward) | the RLCD-style approach |
 
-| confidence source | method | trained by |
+Side result: having the model *write* its confidence instead (untrained).
+
+**Metrics:** accuracy, ECE, Brier, selective accuracy — reported separately for familiar and
+unfamiliar tasks.
+
+## Results so far (test set)
+| | ECE familiar | ECE unfamiliar |
 |---|---|---|
-| token probability (implicit) | prompting | — |
-| token probability (implicit) | + temperature scaling | one scalar fit on a validation split |
-| token probability (implicit) | SFT | cross-entropy (already a proper scoring rule) |
-| written-out number (explicit, Jev-style typed output) | prompting | — |
-| written-out number (explicit) | RL, correctness-only reward (control) | GRPO |
-| written-out number (explicit) | RL, correctness + Brier reward | GRPO |
+| base, raw | 0.274 | 0.363 |
+| base, written confidence | 0.208 | 0.247 |
+| base + temperature scaling (T = 9.89) | 0.064 | 0.111 |
 
-RL is only needed for the explicit case: a sampled number isn't differentiable, so it can
-only be scored after it's written. The core question is whether RL-trained *written*
-confidence beats temperature-scaled *token-probability* confidence, especially on held-out tasks.
-
-**Metrics:** accuracy, expected calibration error (ECE), Brier score, selective accuracy at
-fixed coverage (abstain when unsure). In-distribution and held-out tasks.
-
-**Related work:** RLCR — *Beyond Binary Rewards: Training LMs to Reason About Their
-Uncertainty* (arXiv 2507.16806) does calibration-reward RL **with** reasoning; this project
-targets the no-reasoning / single-step setting where temperature scaling is a strong baseline.
-
-_Status: scaffolded 2026-11-08._
+**Related work:** TypeSafe Jev / RLCD (closed); RLCR (arXiv 2507.16806, RL calibration *with*
+reasoning); open Jev alternatives (decider, s1-decision-model, lev, opendecider) use
+option-probability readout + post-hoc calibration but don't isolate RL vs. cheap fixes on
+unseen task types.
