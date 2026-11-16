@@ -1,0 +1,46 @@
+trainable params: 17.4M of 1738M
+step 0 | cal NLL 3.977
+step 25 | train loss 1.587 | 0.75s/step | GPU mem 4.3 GB
+step 50 | train loss 0.725 | 0.80s/step | GPU mem 4.3 GB
+step 75 | train loss 1.037 | 0.85s/step | GPU mem 4.3 GB
+step 100 | train loss 0.453 | 0.85s/step | GPU mem 4.3 GB
+step 125 | train loss 0.776 | 0.87s/step | GPU mem 4.3 GB
+step 150 | train loss 0.626 | 1.00s/step | GPU mem 4.3 GB
+step 175 | train loss 0.593 | 0.96s/step | GPU mem 4.3 GB
+step 200 | train loss 0.815 | 0.96s/step | GPU mem 4.3 GB
+step 225 | train loss 0.626 | 0.96s/step | GPU mem 4.3 GB
+step 250 | train loss 0.273 | 0.96s/step | GPU mem 4.3 GB
+step 250 | cal NLL 0.601  <- best, saved
+step 275 | train loss 0.797 | 1.03s/step | GPU mem 4.3 GB
+step 300 | train loss 0.177 | 1.03s/step | GPU mem 4.3 GB
+step 325 | train loss 0.757 | 1.02s/step | GPU mem 4.3 GB
+step 350 | train loss 0.446 | 1.01s/step | GPU mem 4.3 GB
+step 375 | train loss 0.367 | 1.01s/step | GPU mem 4.3 GB
+step 400 | train loss 0.539 | 1.01s/step | GPU mem 4.3 GB
+step 425 | train loss 0.338 | 1.00s/step | GPU mem 4.3 GB
+step 450 | train loss 0.639 | 1.00s/step | GPU mem 4.3 GB
+step 475 | train loss 0.431 | 0.99s/step | GPU mem 4.3 GB
+step 500 | train loss 0.100 | 0.99s/step | GPU mem 4.3 GB
+step 500 | cal NLL 0.590  <- best, saved
+step 525 | train loss 0.685 | 1.02s/step | GPU mem 4.3 GB
+step 550 | train loss 0.498 | 1.02s/step | GPU mem 4.3 GB
+step 575 | train loss 0.269 | 1.02s/step | GPU mem 4.3 GB
+step 600 | train loss 1.195 | 1.02s/step | GPU mem 4.3 GB
+step 625 | train loss 0.511 | 1.03s/step | GPU mem 4.3 GB
+step 650 | train loss 0.626 | 1.03s/step | GPU mem 4.3 GB
+step 675 | train loss 1.029 | 1.03s/step | GPU mem 4.3 GB
+step 700 | train loss 0.224 | 1.02s/step | GPU mem 4.3 GB
+step 725 | train loss 0.129 | 1.02s/step | GPU mem 4.3 GB
+step 750 | train loss 0.303 | 1.02s/step | GPU mem 4.3 GB
+step 750 | cal NLL 0.561  <- best, saved
+step 775 | train loss 0.478 | 1.04s/step | GPU mem 4.3 GB
+step 800 | train loss 0.397 | 1.03s/step | GPU mem 4.3 GB
+step 825 | train loss 0.198 | 1.02s/step | GPU mem 4.3 GB
+step 850 | train loss 0.844 | 1.02s/step | GPU mem 4.3 GB
+step 875 | train loss 0.237 | 1.01s/step | GPU mem 4.3 GB
+step 900 | train loss 0.124 | 1.01s/step | GPU mem 4.3 GB
+step 925 | train loss 0.299 | 1.00s/step | GPU mem 4.3 GB
+step 950 | train loss 0.116 | 1.00s/step | GPU mem 4.3 GB
+step 975 | train loss 0.771 | 1.00s/step | GPU mem 4.3 GB
+step 1000 | train loss 0.288 | 1.00s/step | GPU mem 4.3 GB
+step 1000 | cal NLL 0.550  <- best, saved
