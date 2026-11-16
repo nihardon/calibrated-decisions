@@ -30,18 +30,18 @@ def arg(name, default):
     return type(default)(sys.argv[sys.argv.index(name) + 1]) if name in sys.argv else default
 
 
-def batch_loss(model, tok, letter_ids, rows):
+def batch_loss(model, tok, letter_ids, rows, tau=1.0):
     # pad to a multiple of 64 so the GPU sees few distinct shapes (MPS caches memory per shape)
     enc = tok([build_chat(tok, r) for r in rows], return_tensors='pt', padding=True, pad_to_multiple_of=64).to(device)
     last = model(**enc, logits_to_keep=1).logits[:, -1]   # only score the answer position (saves GBs)
-    losses = [-option_logprobs(last[i], letter_ids, len(r['options']))[r['answer']] for i, r in enumerate(rows)]
+    losses = [-option_logprobs(last[i] / tau, letter_ids, len(r['options']))[r['answer']] for i, r in enumerate(rows)]
     return torch.stack(losses).mean()
 
 
 @torch.no_grad()
-def cal_nll(model, tok, letter_ids, cal):
+def cal_nll(model, tok, letter_ids, cal, tau=1.0):
     model.eval()
-    total = sum(batch_loss(model, tok, letter_ids, cal[i:i + 16]).item() * len(cal[i:i + 16]) for i in range(0, len(cal), 16))
+    total = sum(batch_loss(model, tok, letter_ids, cal[i:i + 16], tau).item() * len(cal[i:i + 16]) for i in range(0, len(cal), 16))
     model.train()
     if device == 'mps':
         torch.mps.empty_cache()
