@@ -1,0 +1,45 @@
+reward=brier tau=10.0 | step 0 | cal NLL 0.779
+step 25 | reward 0.359 | top conf 0.701 | no-signal 22% | 0.74s/step | GPU mem 5.4 GB
+step 50 | reward 0.370 | top conf 0.743 | no-signal 18% | 0.79s/step | GPU mem 5.4 GB
+step 75 | reward 0.481 | top conf 0.831 | no-signal 38% | 0.83s/step | GPU mem 5.4 GB
+step 100 | reward 0.545 | top conf 0.893 | no-signal 59% | 0.82s/step | GPU mem 5.4 GB
+step 125 | reward 0.494 | top conf 0.923 | no-signal 69% | 0.83s/step | GPU mem 5.4 GB
+step 150 | reward 0.439 | top conf 0.901 | no-signal 64% | 0.92s/step | GPU mem 5.5 GB
+step 175 | reward 0.468 | top conf 0.904 | no-signal 67% | 0.89s/step | GPU mem 5.5 GB
+step 200 | reward 0.419 | top conf 0.910 | no-signal 68% | 0.89s/step | GPU mem 5.4 GB
+step 225 | reward 0.433 | top conf 0.913 | no-signal 72% | 0.89s/step | GPU mem 5.4 GB
+step 250 | reward 0.538 | top conf 0.893 | no-signal 68% | 0.89s/step | GPU mem 5.4 GB
+step 250 | cal NLL 0.883
+step 275 | reward 0.585 | top conf 0.899 | no-signal 74% | 0.95s/step | GPU mem 5.4 GB
+step 300 | reward 0.661 | top conf 0.926 | no-signal 76% | 0.95s/step | GPU mem 5.5 GB
+step 325 | reward 0.550 | top conf 0.926 | no-signal 74% | 0.95s/step | GPU mem 5.4 GB
+step 350 | reward 0.583 | top conf 0.929 | no-signal 79% | 0.94s/step | GPU mem 5.4 GB
+step 375 | reward 0.510 | top conf 0.938 | no-signal 80% | 0.93s/step | GPU mem 5.4 GB
+step 400 | reward 0.597 | top conf 0.951 | no-signal 86% | 0.93s/step | GPU mem 5.4 GB
+step 425 | reward 0.597 | top conf 0.939 | no-signal 82% | 0.93s/step | GPU mem 5.4 GB
+step 450 | reward 0.559 | top conf 0.947 | no-signal 82% | 0.93s/step | GPU mem 5.4 GB
+step 475 | reward 0.616 | top conf 0.947 | no-signal 80% | 0.92s/step | GPU mem 5.4 GB
+step 500 | reward 0.606 | top conf 0.959 | no-signal 86% | 0.92s/step | GPU mem 5.4 GB
+step 500 | cal NLL 0.999
+step 525 | reward 0.510 | top conf 0.915 | no-signal 76% | 0.95s/step | GPU mem 5.4 GB
+step 550 | reward 0.557 | top conf 0.938 | no-signal 79% | 0.96s/step | GPU mem 5.4 GB
+step 575 | reward 0.592 | top conf 0.939 | no-signal 80% | 0.95s/step | GPU mem 5.4 GB
+step 600 | reward 0.575 | top conf 0.949 | no-signal 82% | 0.95s/step | GPU mem 5.4 GB
+step 625 | reward 0.546 | top conf 0.946 | no-signal 84% | 0.97s/step | GPU mem 5.4 GB
+step 650 | reward 0.589 | top conf 0.959 | no-signal 85% | 0.97s/step | GPU mem 5.4 GB
+step 675 | reward 0.596 | top conf 0.925 | no-signal 82% | 0.97s/step | GPU mem 5.4 GB
+step 700 | reward 0.711 | top conf 0.950 | no-signal 82% | 0.97s/step | GPU mem 5.4 GB
+step 725 | reward 0.585 | top conf 0.942 | no-signal 86% | 0.97s/step | GPU mem 5.4 GB
+step 750 | reward 0.682 | top conf 0.957 | no-signal 83% | 0.96s/step | GPU mem 5.4 GB
+step 750 | cal NLL 1.092
+step 775 | reward 0.491 | top conf 0.942 | no-signal 82% | 0.98s/step | GPU mem 5.4 GB
+step 800 | reward 0.613 | top conf 0.944 | no-signal 84% | 0.98s/step | GPU mem 5.4 GB
+step 825 | reward 0.622 | top conf 0.941 | no-signal 83% | 0.97s/step | GPU mem 5.4 GB
+step 850 | reward 0.507 | top conf 0.927 | no-signal 82% | 0.97s/step | GPU mem 5.4 GB
+step 875 | reward 0.674 | top conf 0.957 | no-signal 87% | 0.96s/step | GPU mem 5.4 GB
+step 900 | reward 0.556 | top conf 0.948 | no-signal 86% | 0.96s/step | GPU mem 5.4 GB
+step 925 | reward 0.565 | top conf 0.932 | no-signal 76% | 0.96s/step | GPU mem 5.4 GB
+step 950 | reward 0.594 | top conf 0.945 | no-signal 81% | 0.96s/step | GPU mem 5.4 GB
+step 975 | reward 0.552 | top conf 0.928 | no-signal 82% | 0.95s/step | GPU mem 5.4 GB
+step 1000 | reward 0.623 | top conf 0.939 | no-signal 82% | 0.95s/step | GPU mem 5.4 GB
+step 1000 | cal NLL 1.042

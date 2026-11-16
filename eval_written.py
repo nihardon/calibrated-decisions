@@ -10,6 +10,7 @@ import time
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+from eval_spread import load_model
 from written import build_chat, score
 
 BATCH = 16
@@ -21,7 +22,7 @@ device = 'mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is
 def run(model_name, split, limit=None, tag=None):
     tok = AutoTokenizer.from_pretrained(model_name)
     tok.padding_side = 'left'
-    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=torch.bfloat16).to(device).eval()
+    model = load_model(model_name).to(device).eval()
     rows = [json.loads(l) for l in open(f'data/{split}.jsonl')][:limit]
 
     out, start = [], time.time()
