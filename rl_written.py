@@ -28,7 +28,7 @@ BATCH = 8            # questions per step
 GROUP = 8            # completions per question
 LR = 1e-5
 MAX_NEW = 24
-CHUNK = 16           # sequences per backward pass (memory)
+CHUNK = 8            # sequences per backward pass (memory)
 EVAL_EVERY = 100
 CAL_SUBSET = 300
 
@@ -51,9 +51,10 @@ def cal_brier(model, tok, cal):
     return brier(conf, correct), sum(correct) / len(correct)
 
 
-def completion_logprobs(model, seqs, attn, n_new):
-    """Sum of log p(token) over the generated part of each sequence (padding after EOS masked out)."""
-    logits = model(input_ids=seqs, attention_mask=attn, logits_to_keep=n_new + 1).logits[:, :-1]
+def completion_logprobs(model, seqs, attn, n_new, temp):
+    """Sum of log p(token) over the generated part of each sequence (padding after EOS masked out).
+    Computed at the sampling temperature, so the policy we train is the one we sampled from."""
+    logits = model(input_ids=seqs, attention_mask=attn, logits_to_keep=n_new + 1).logits[:, :-1] / temp
     targets = seqs[:, -n_new:]
     logp = logits.float().log_softmax(-1).gather(-1, targets.unsqueeze(-1)).squeeze(-1)
     return (logp * attn[:, -n_new:]).sum(-1)
@@ -61,7 +62,7 @@ def completion_logprobs(model, seqs, attn, n_new):
 
 def main():
     reward_type, steps, out = arg('--reward', 'brier'), arg('--steps', 600), arg('--out', 'checkpoints/rlw')
-    temp = arg('--temp', 1.0)
+    temp = arg('--temp', 1.3)
     assert reward_type in ('correct', 'brier')
     random.seed(SEED)
     torch.manual_seed(SEED)
@@ -69,6 +70,8 @@ def main():
     tok = AutoTokenizer.from_pretrained(MODEL)
     tok.padding_side = 'left'
     model = AutoModelForCausalLM.from_pretrained(MODEL, dtype=torch.bfloat16).to(device)
+    model.gradient_checkpointing_enable()     # recompute activations in backward: far less memory
+    model.enable_input_require_grads()
     model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, lora_dropout=0.0, task_type='CAUSAL_LM',
                                              target_modules=['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj']))
     train = [json.loads(l) for l in open('data/train.jsonl')]
@@ -76,15 +79,17 @@ def main():
     random.shuffle(cal)
     cal = cal[:CAL_SUBSET]
 
+    longest = sorted(train, key=lambda r: len(build_chat(tok, r)))[-BATCH:] if '--longest' in __import__('sys').argv else None
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=LR)
     best, acc = cal_brier(model, tok, cal)
     print(f'reward={reward_type} | step 0 | cal Brier {best:.3f} acc {acc:.3f}', flush=True)
     model.save_pretrained(out)          # step 0 counts as a candidate
     tok.save_pretrained(out)
+    peak = 0.0
     start, log = time.time(), {'reward': 0.0, 'conf': 0.0, 'fmt_fail': 0.0, 'no_signal': 0.0}
 
     for step in range(1, steps + 1):
-        rows = random.sample(train, BATCH)
+        rows = longest if longest else random.sample(train, BATCH)
         lr = LR * min(1, step / 30) * 0.5 * (1 + math.cos(math.pi * step / steps))
         for g in opt.param_groups:
             g['lr'] = lr
@@ -92,7 +97,7 @@ def main():
         # 1) sample GROUP completions per question (no gradients)
         model.eval()
         with torch.no_grad():
-            enc = tok([build_chat(tok, r) for r in rows], return_tensors='pt', padding=True).to(device)
+            enc = tok([build_chat(tok, r) for r in rows], return_tensors='pt', padding=True, pad_to_multiple_of=64).to(device)
             gen = model.generate(**enc, max_new_tokens=MAX_NEW, do_sample=True, temperature=temp, top_p=1.0,
                                  num_return_sequences=GROUP, pad_token_id=tok.pad_token_id)
         model.train()
@@ -126,16 +131,18 @@ def main():
             sl = slice(c, c + CHUNK)
             if adv[sl].abs().sum() == 0:
                 continue
-            lp = completion_logprobs(model, gen[sl], attn[sl], n_new)
+            lp = completion_logprobs(model, gen[sl], attn[sl], n_new, temp)
             (-(adv[sl] * lp).sum() / len(texts)).backward()
+            if device == 'mps':
+                peak = max(peak, torch.mps.driver_allocated_memory() / 1e9)
         opt.step()
+        if device == 'mps':
+            torch.mps.empty_cache()
 
         if step % 10 == 0:
-            if device == 'mps':
-                torch.mps.empty_cache()
             mem = torch.mps.driver_allocated_memory() / 1e9 if device == 'mps' else 0
             print(f"step {step} | reward {log['reward'] / 10:.3f} | avg conf {log['conf'] / 10:.3f} | fmt fail {log['fmt_fail'] / 10:.0%} | "
-                  f"no-signal {log['no_signal'] / 10:.0%} | {(time.time() - start) / step:.1f}s/step | GPU mem {mem:.1f} GB", flush=True)
+                  f"no-signal {log['no_signal'] / 10:.0%} | {(time.time() - start) / step:.1f}s/step | GPU mem {mem:.1f} GB (peak {peak:.1f})", flush=True)
             log = {k: 0.0 for k in log}
         if step % EVAL_EVERY == 0 or step == steps:
             b, acc = cal_brier(model, tok, cal)
