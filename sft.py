@@ -3,7 +3,7 @@
 Loss = cross-entropy on the option spread: -log p(correct option), using exactly the readout
 we evaluate with. Checkpoint chosen by calibration-split NLL (never test).
 
-Run: python sft.py [--steps N] [--out checkpoints/sft]
+Run: python sft.py [--steps N] [--out checkpoints/sft] [--seed 0]
 """
 import json
 import math
@@ -49,9 +49,9 @@ def cal_nll(model, tok, letter_ids, cal, tau=1.0):
 
 
 def main():
-    steps, out = arg('--steps', 1000), arg('--out', 'checkpoints/sft')
-    random.seed(SEED)
-    torch.manual_seed(SEED)
+    steps, out, seed = arg('--steps', 1000), arg('--out', 'checkpoints/sft'), arg('--seed', SEED)
+    random.seed(seed)
+    torch.manual_seed(seed)
 
     tok = AutoTokenizer.from_pretrained(MODEL)
     tok.padding_side = 'left'

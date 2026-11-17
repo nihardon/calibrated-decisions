@@ -15,6 +15,7 @@ from data import FAMILIAR, UNFAMILIAR
 from metrics import summary
 
 SPREAD = [('base + T', 'Qwen3-1.7B'), ('fine-tuned + T', 'sft')]
+SFT_SEEDS = ['sft', 'sft_s1', 'sft_s2']    # same data, different training seeds
 WRITTEN = [('base, written', 'Qwen3-1.7B'), ('RL (Brier), written', 'rlw_brier')]
 
 
@@ -32,6 +33,13 @@ if __name__ == '__main__':
             T = fit_temperature(load(tag, 'cal'))
             rows = [r for r in load(tag, 'test') if r['task'] in tasks]
             print(row(f'{name} (T={T:.2f})', *conf_correct(rows, T)))
+        seeds = [t for t in SFT_SEEDS if os.path.exists(f'results/spread_{t}_test.jsonl')]
+        if len(seeds) > 1:
+            eces = []
+            for t in seeds:
+                T = fit_temperature(load(t, 'cal'))
+                eces.append(summary(*conf_correct([r for r in load(t, 'test') if r['task'] in tasks], T))['ece'])
+            print(f"  fine-tuned + T over {len(seeds)} seeds: ECE {np.mean(eces):.3f} ± {np.std(eces):.3f}  ({', '.join(f'{e:.3f}' for e in eces)})")
         for name, tag in WRITTEN:
             path = f'results/written_{tag}_test.jsonl'
             if not os.path.exists(path):
