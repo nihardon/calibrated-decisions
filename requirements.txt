@@ -6,3 +6,4 @@ peft==0.21.2
 datasets==5.2.0
 accelerate
 numpy
+matplotlib
